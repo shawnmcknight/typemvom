@@ -1,0 +1,9 @@
+{
+  "name": "typemvom",
+  "version": "0.0.0",
+  "description": "TypeScript ORM for Rocket MultiValue Databases",
+  "main": "index.ts",
+  "repository": "https://github.com/shawnmcknight/typemvom",
+  "author": "Shawn McKnight",
+  "license": "MIT"
+}
