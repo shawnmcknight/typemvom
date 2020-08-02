@@ -1,0 +1,14 @@
+### directories
+# build folder
+build
+# test coverage
+coverage
+# installed modules
+node_modules
+
+### individual files
+.eslintcache
+npm-debug.log
+yarn-error.log
+
+

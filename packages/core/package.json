@@ -1,0 +1,23 @@
+{
+  "name": "typemvom-core",
+  "version": "0.0.0",
+  "description": "TypeScript ORM for Rocket MultiValue Databases Core",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shawnmcknight/typemvom.git"
+  },
+  "keywords": [
+    "rocket",
+    "multivalue",
+    "database",
+    "orm",
+    "unidata",
+    "universe",
+    "pick"
+  ],
+  "author": "Shawn McKnight",
+  "license": "MIT",
+  "devDependencies": {}
+}
