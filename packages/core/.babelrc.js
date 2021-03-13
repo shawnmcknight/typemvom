@@ -21,6 +21,6 @@ module.exports = {
 		build: {
 			ignore: ['**/*.test.ts', '**/*.test.tsx', '**/__tests__/**'], // do not build test files
 		},
-		debug: { sourceMaps: true, retainLines: true },
+		debug: { sourceMaps: 'inline', retainLines: true },
 	},
 };
