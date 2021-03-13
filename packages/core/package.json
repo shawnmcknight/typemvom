@@ -19,5 +19,12 @@
   ],
   "author": "Shawn McKnight",
   "license": "MIT",
-  "devDependencies": {}
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.10.5",
+    "babel-plugin-transform-typescript-metadata": "^0.3.0"
+  }
 }
