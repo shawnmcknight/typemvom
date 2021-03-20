@@ -1,41 +1,52 @@
 import Connection from './Connection';
-import type { ConnectionOptions } from './Connection';
 
 // #region Types
-type NotDefaultableConnectionOptions = 'name' | 'account';
-
-export type ConnectionManagerDefaultable = Partial<
-	Omit<ConnectionOptions, NotDefaultableConnectionOptions>
->;
-
-export type ConnectionManagerConnectionOptions = Pick<
-	ConnectionOptions,
-	NotDefaultableConnectionOptions
-> &
-	ConnectionManagerDefaultable;
+interface ConnectionOptions {
+	mvisUrl?: string;
+	mvisAdminUrl?: string;
+	mvisAdminUsername?: string;
+	mvisAdminPassword?: string;
+	timeout?: number;
+}
 // #endregion
 
 /** Manage connections */
 class ConnectionManager {
 	private connections: Map<string, Connection> = new Map();
 
-	private readonly connectionDefaults: ConnectionManagerDefaultable;
+	private readonly connectionDefaults: ConnectionOptions;
 
-	public constructor(connectionDefaults: ConnectionManagerDefaultable = {}) {
+	public constructor(connectionDefaults: ConnectionOptions = {}) {
 		this.connectionDefaults = connectionDefaults;
 	}
 
 	/** Create a new connection within this ConnectionManager instance */
-	public create(options: ConnectionManagerConnectionOptions): Connection {
-		const { name } = options;
-
+	public create(
+		name: string,
+		account: string,
+		connectionOptions: ConnectionOptions = {},
+	): Connection {
 		if (this.connections.has(name)) {
 			throw new Error(`A connection already exists with name ${name}`);
 		}
 
-		const connectionOptions = this.buildConnectionOptions(options);
+		const {
+			mvisUrl,
+			mvisAdminUrl,
+			mvisAdminUsername,
+			mvisAdminPassword,
+			timeout,
+		} = this.buildConnectionOptions(connectionOptions);
 
-		const connection = new Connection(connectionOptions);
+		const connection = Connection.create(
+			name,
+			account,
+			mvisUrl,
+			mvisAdminUrl,
+			mvisAdminUsername,
+			mvisAdminPassword,
+			{ timeout },
+		);
 
 		this.connections.set(name, connection);
 
@@ -54,9 +65,7 @@ class ConnectionManager {
 	}
 
 	/** Merge default and override connection options */
-	private buildConnectionOptions = (
-		options: ConnectionManagerConnectionOptions,
-	): ConnectionOptions => {
+	private buildConnectionOptions = (options: ConnectionOptions): Required<ConnectionOptions> => {
 		const connectionOptions = {
 			...this.connectionDefaults,
 			...options,
@@ -71,7 +80,7 @@ class ConnectionManager {
 			throw new Error('Missing required connection property');
 		}
 
-		return connectionOptions as ConnectionOptions; // needed to narrow type
+		return connectionOptions as Required<ConnectionOptions>; // needed to narrow type
 	};
 }
 

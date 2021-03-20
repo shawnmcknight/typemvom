@@ -1,29 +1,6 @@
-import type { AxiosInstance } from 'axios';
-import axios from 'axios';
-import axiosCookieJarSupport from 'axios-cookiejar-support';
-import tough from 'tough-cookie';
+import ServerFeatureManager from './ServerFeatureManager';
 
 // #region Types
-export interface ConnectionOptions {
-	/** A unique name for the connection */
-	name: string;
-	/** The database account name in MVIS */
-	account: string;
-	/** The MVIS URL */
-	mvisUrl: string;
-	/** The MVIS Admin URL */
-	mvisAdminUrl: string;
-	/** The MVIS Admin Username */
-	mvisAdminUsername: string;
-	/** The MVIS Admin Password */
-	mvisAdminPassword: string;
-	/**
-	 * Connection timeout in milliseconds
-	 * Default 30_000 (30 seconds)
-	 */
-	timeout?: number;
-}
-
 export enum ConnectionStatus {
 	open,
 	closed,
@@ -41,73 +18,54 @@ class Connection {
 	private readonly account: string;
 
 	/** The MVIS URL */
-	private readonly mvisUrl: string;
+	private readonly url: string;
 
-	/** The MVIS Admin URL */
-	private readonly mvisAdminUrl: string;
-
-	/** The MVIS Admin Username */
-	private readonly mvisAdminUsername: string;
-
-	/** The MVIS Admin Password */
-	private readonly mvisAdminPassword: string;
+	private readonly serverFeatureManager: ServerFeatureManager;
 
 	/** Connection timeout in milliseconds  */
 	private readonly timeout: number;
 
-	private mvisAdminAxios: AxiosInstance;
-
-	public constructor(options: ConnectionOptions) {
-		const {
-			name,
-			account,
-			mvisUrl,
-			mvisAdminUrl,
-			mvisAdminUsername,
-			mvisAdminPassword,
-			timeout = 30_000,
-		} = options;
+	private constructor(
+		name: string,
+		account: string,
+		url: string,
+		serverFeatureManager: ServerFeatureManager,
+		options: { timeout?: number } = {},
+	) {
+		const { timeout = 30_000 } = options;
 
 		this.name = name;
 		this.account = account;
-		this.mvisUrl = mvisUrl;
-		this.mvisAdminUrl = mvisAdminUrl;
-		this.mvisAdminUsername = mvisAdminUsername;
-		this.mvisAdminPassword = mvisAdminPassword;
+		this.url = url;
+		this.serverFeatureManager = serverFeatureManager;
 		this.timeout = timeout;
+	}
 
-		this.mvisAdminAxios = axiosCookieJarSupport(
-			axios.create({
-				baseURL: this.mvisAdminUrl,
-				jar: new tough.CookieJar(),
-				auth: {
-					username: this.mvisAdminUsername,
-					password: this.mvisAdminPassword,
-				},
-				withCredentials: true,
-				timeout: this.timeout,
-			}),
+	public static create(
+		name: string,
+		account: string,
+		mvisUrl: string,
+		mvisAdminUrl: string,
+		mvisAdminUsername: string,
+		mvisAdminPassword: string,
+		{ timeout }: { timeout?: number } = {},
+	): Connection {
+		const serverFeatureManager = new ServerFeatureManager(
+			mvisAdminUrl,
+			account,
+			mvisAdminUsername,
+			mvisAdminPassword,
+			{ timeout },
 		);
+
+		return new Connection(name, account, mvisUrl, serverFeatureManager, { timeout });
 	}
 
 	public async connect(): Promise<void> {
 		this.status = ConnectionStatus.connecting;
-		await this.getDeployedSubroutines();
+		await this.serverFeatureManager.checkFeatureStatus();
 		this.status = ConnectionStatus.open;
 	}
-
-	private authenticateMvisAdmin = async (): Promise<void> => {
-		await this.mvisAdminAxios.get('api/user');
-	};
-
-	private getDeployedSubroutines = async (): Promise<void> => {
-		await this.authenticateMvisAdmin();
-
-		const subroutineUrl = `api/manager/rest/${this.account}/subroutines`;
-
-		const foo = await this.mvisAdminAxios.get(subroutineUrl);
-		console.log(foo.data);
-	};
 }
 
 export default Connection;
