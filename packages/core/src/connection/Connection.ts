@@ -1,10 +1,17 @@
+// #region Types
 export interface ConnectionOptions {
 	/** A unique name for the connection */
 	name: string;
-	/** The MVIS URL */
-	url: string;
 	/** The database account name in MVIS */
 	account: string;
+	/** The MVIS URL */
+	mvisUrl: string;
+	/** The MVIS Admin URL */
+	mvisAdminUrl: string;
+	/** The MVIS Admin Username */
+	mvisAdminUsername: string;
+	/** The MVIS Admin Password */
+	mvisAdminPassword: string;
 	/**
 	 * Connection timeout in milliseconds
 	 * Default 30_000 (30 seconds)
@@ -17,28 +24,49 @@ export enum ConnectionStatus {
 	closed,
 	connecting,
 }
+// #endregion
 
 class Connection {
 	public status: ConnectionStatus = ConnectionStatus.closed;
 
 	/** A unique name for the connection */
-	private name: string;
-
-	/** The MVIS URL */
-	private url: string;
+	private readonly name: string;
 
 	/** The database account name in MVIS */
-	private account: string;
+	private readonly account: string;
+
+	/** The MVIS URL */
+	private readonly mvisUrl: string;
+
+	/** The MVIS Admin URL */
+	private readonly mvisAdminUrl: string;
+
+	/** The MVIS Admin Username */
+	private readonly mvisAdminUsername: string;
+
+	/** The MVIS Admin Password */
+	private readonly mvisAdminPassword: string;
 
 	/** Connection timeout in milliseconds  */
-	private timeout: number;
+	private readonly timeout: number;
 
 	public constructor(options: ConnectionOptions) {
-		const { name, url, account, timeout = 30_000 } = options;
+		const {
+			name,
+			account,
+			mvisUrl,
+			mvisAdminUrl,
+			mvisAdminUsername,
+			mvisAdminPassword,
+			timeout = 30_000,
+		} = options;
 
 		this.name = name;
-		this.url = url;
 		this.account = account;
+		this.mvisUrl = mvisUrl;
+		this.mvisAdminUrl = mvisAdminUrl;
+		this.mvisAdminUsername = mvisAdminUsername;
+		this.mvisAdminPassword = mvisAdminPassword;
 		this.timeout = timeout;
 	}
 
