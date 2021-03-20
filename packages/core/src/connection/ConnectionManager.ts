@@ -8,6 +8,11 @@ interface ConnectionOptions {
 	mvisAdminPassword?: string;
 	timeout?: number;
 }
+
+type RequiredConnectionOptions = Required<
+	Pick<ConnectionOptions, 'mvisUrl' | 'mvisAdminUrl' | 'mvisAdminUsername' | 'mvisAdminPassword'>
+> &
+	Pick<ConnectionOptions, 'timeout'>;
 // #endregion
 
 /** Manage connections */
@@ -65,7 +70,7 @@ class ConnectionManager {
 	}
 
 	/** Merge default and override connection options */
-	private buildConnectionOptions = (options: ConnectionOptions): Required<ConnectionOptions> => {
+	private buildConnectionOptions = (options: ConnectionOptions): RequiredConnectionOptions => {
 		const connectionOptions = {
 			...this.connectionDefaults,
 			...options,
@@ -80,7 +85,7 @@ class ConnectionManager {
 			throw new Error('Missing required connection property');
 		}
 
-		return connectionOptions as Required<ConnectionOptions>; // needed to narrow type
+		return connectionOptions as RequiredConnectionOptions; // needed to narrow type
 	};
 }
 

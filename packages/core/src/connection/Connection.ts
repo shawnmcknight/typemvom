@@ -30,10 +30,8 @@ class Connection {
 		account: string,
 		url: string,
 		serverFeatureManager: ServerFeatureManager,
-		options: { timeout?: number } = {},
+		timeout: number,
 	) {
-		const { timeout = 30_000 } = options;
-
 		this.name = name;
 		this.account = account;
 		this.url = url;
@@ -48,17 +46,19 @@ class Connection {
 		mvisAdminUrl: string,
 		mvisAdminUsername: string,
 		mvisAdminPassword: string,
-		{ timeout }: { timeout?: number } = {},
+		options: { timeout?: number } = {},
 	): Connection {
+		const { timeout = 30_000 } = options;
+
 		const serverFeatureManager = new ServerFeatureManager(
 			mvisAdminUrl,
 			account,
 			mvisAdminUsername,
 			mvisAdminPassword,
-			{ timeout },
+			timeout,
 		);
 
-		return new Connection(name, account, mvisUrl, serverFeatureManager, { timeout });
+		return new Connection(name, account, mvisUrl, serverFeatureManager, timeout);
 	}
 
 	public async connect(): Promise<void> {

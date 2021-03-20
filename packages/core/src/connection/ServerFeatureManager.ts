@@ -3,12 +3,6 @@ import axios from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import tough from 'tough-cookie';
 
-// #region Types
-interface ServerFeatureManagerOptions {
-	timeout?: number;
-}
-// #endregion
-
 class ServerFeatureManager {
 	private account: string;
 
@@ -19,10 +13,8 @@ class ServerFeatureManager {
 		account: string,
 		username: string,
 		password: string,
-		options: ServerFeatureManagerOptions = {},
+		timeout: number,
 	) {
-		const { timeout = 30000 } = options;
-
 		this.account = account;
 
 		this.mvisAdmin = axiosCookieJarSupport(
