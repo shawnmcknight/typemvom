@@ -1,3 +1,8 @@
+import type { AxiosInstance } from 'axios';
+import axios from 'axios';
+import axiosCookieJarSupport from 'axios-cookiejar-support';
+import tough from 'tough-cookie';
+
 // #region Types
 export interface ConnectionOptions {
 	/** A unique name for the connection */
@@ -50,6 +55,8 @@ class Connection {
 	/** Connection timeout in milliseconds  */
 	private readonly timeout: number;
 
+	private mvisAdminAxios: AxiosInstance;
+
 	public constructor(options: ConnectionOptions) {
 		const {
 			name,
@@ -68,12 +75,40 @@ class Connection {
 		this.mvisAdminUsername = mvisAdminUsername;
 		this.mvisAdminPassword = mvisAdminPassword;
 		this.timeout = timeout;
+
+		this.mvisAdminAxios = axiosCookieJarSupport(
+			axios.create({
+				baseURL: this.mvisAdminUrl,
+				jar: new tough.CookieJar(),
+				auth: {
+					username: this.mvisAdminUsername,
+					password: this.mvisAdminPassword,
+				},
+				withCredentials: true,
+				timeout: this.timeout,
+			}),
+		);
 	}
 
-	public connect() {
+	public async connect(): Promise<void> {
 		this.status = ConnectionStatus.connecting;
+		await this.getDeployedSubroutines;
 		this.status = ConnectionStatus.open;
 	}
+
+	private authenticateMvisAdmin = async (): Promise<void> => {
+		const foo = await this.mvisAdminAxios.get('api/user');
+		console.log(foo.data);
+	};
+
+	private getDeployedSubroutines = async (): Promise<void> => {
+		await this.authenticateMvisAdmin();
+
+		const subroutineUrl = `api/manager/rest/${this.account}/subroutines`;
+
+		const foo = await this.mvisAdminAxios.get(subroutineUrl);
+		console.log(foo.data);
+	};
 }
 
 export default Connection;
