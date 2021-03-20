@@ -1,28 +1,17 @@
-import 'reflect-metadata';
+import { ConnectionManager } from './connection';
 
-function Decorator(): PropertyDecorator;
+(async () => {
+	const connectionManager = new ConnectionManager({
+		mvisAdminUsername: process.env.MVIS_ADMIN_USERNAME,
+		mvisAdminPassword: process.env.MVIS_ADMIN_PASSWORD,
+		mvisUrl: 'https://internal.api.storis.io/v1/connection_manager',
+		mvisAdminUrl: 'https://cm-admin.storis.io',
+	});
 
-function Decorator(type: 'string'): PropertyDecorator;
-
-function Decorator(type?: any): PropertyDecorator {
-	console.log(type);
-	return (target: any, key: string | symbol) => {
-		const t = Reflect.getMetadata('design:type', target, key);
-		const isArray = t === Array;
-		console.log(`${String(key)} = ${t}`, `isArray = ${isArray}`);
-
-		Object.defineProperty(target, key, {
-			value: 'foo',
-		});
-	};
-}
-
-class Foo {
-	@Decorator()
-	public foo!: string;
-
-	@Decorator('string')
-	public bar!: string[];
-}
-
-const foo = new Foo();
+	const connection = connectionManager.create({ name: 'dev-103', account: 'dev-103' });
+	try {
+		await connection.connect();
+	} catch (err) {
+		console.log(err);
+	}
+})();

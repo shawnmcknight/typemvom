@@ -92,13 +92,12 @@ class Connection {
 
 	public async connect(): Promise<void> {
 		this.status = ConnectionStatus.connecting;
-		await this.getDeployedSubroutines;
+		await this.getDeployedSubroutines();
 		this.status = ConnectionStatus.open;
 	}
 
 	private authenticateMvisAdmin = async (): Promise<void> => {
-		const foo = await this.mvisAdminAxios.get('api/user');
-		console.log(foo.data);
+		await this.mvisAdminAxios.get('api/user');
 	};
 
 	private getDeployedSubroutines = async (): Promise<void> => {

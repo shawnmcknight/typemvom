@@ -21,7 +21,7 @@ class ConnectionManager {
 
 	private readonly connectionDefaults: ConnectionManagerDefaultable;
 
-	public constructor(connectionDefaults: ConnectionManagerDefaultable) {
+	public constructor(connectionDefaults: ConnectionManagerDefaultable = {}) {
 		this.connectionDefaults = connectionDefaults;
 	}
 
