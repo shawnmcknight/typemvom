@@ -20,7 +20,6 @@
   "author": "Shawn McKnight",
   "license": "MIT",
   "dependencies": {
-    "@babel/node": "^7.13.10",
     "axios": "^0.21.1",
     "axios-cookiejar-support": "^1.0.1",
     "core-js": "^3.6.5",
